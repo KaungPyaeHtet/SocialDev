@@ -11,9 +11,9 @@ def index():
                        'email': 'alice@outlook.com'})
 
 @app.route("/users/<user>")
-def show_user_profile(username):
+def show_user_profile(user):
     return json.dumps({
-        "name":"test"
+        "name": user
     })
 
 app.run()

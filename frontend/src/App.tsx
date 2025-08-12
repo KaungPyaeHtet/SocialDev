@@ -1,24 +1,19 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
+import User from "./components/User";
+import Auth from "./pages/Auth";
+import NotFound from "./components/NotFound";
 
-export default function UserComponent() {
-  const [name, setName] = useState("");
-  useEffect(() => {
-    // First example
-    axios
-      .get("http://127.0.0.1:5000/")
-      .then((response) => {
-        console.log(response.data); // handle success
-        setName(response.data.name); // assuming the response has a 'name' field
-      })
-      .catch((error) => {
-        console.error(error); // handle error
-      })
-      .finally(() => {
-        console.log("Request completed"); // always executed
-      });
-  }, []);
+function App() {
   return (
-    <div>Welcome {name}!</div>
-  )
+      <Router>
+          <Routes>
+              <Route path="/auth/*" element={<Auth />} />
+              <Route path="/user/:userName/*" element={<User />} />
+              <Route path="*" element={<NotFound />} />
+          </Routes>
+      </Router>
+  );
 }
+export default App;
