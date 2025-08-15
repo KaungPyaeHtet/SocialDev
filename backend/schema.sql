@@ -1,14 +1,9 @@
--- Define schema that will store
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+);
 
-/*
-1. User login credentials
-    - username
-    - password
-    - id
 
-2. Account info 
-    - contacts
-    - chat data
-    - timestamps
-    - id
-*/
+-- INSERT INTO users (username, email, password) VALUES ('ozzy', 'kaungpyae@gmail.com', '123@#$*@#DSLFJS');
