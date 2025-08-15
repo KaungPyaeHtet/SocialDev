@@ -19,7 +19,7 @@ def register():
     try:
         with sqlite3.connect("users.db") as conn:
             db = conn.cursor()
-            hashed_password = generate_password_hash(password)
+            hashed_password = generate_password_hash(password, method='pbkdf2:sha256:150000')
 
             db.execute(
                 "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
@@ -34,7 +34,7 @@ def register():
     except sqlite3.Error:
         return jsonify("Username already exists."), 422
 
-    return jsonify(user_data)
+    return jsonify("Welcome " + username)
 
 
 def login_required(f):
@@ -42,7 +42,7 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if g.user is None:
             return redirect(url_for("login", next=request.url))
-            return redirect(url_for("login", next=request.url))
+            
         return f(*args, **kwargs)
 
     return decorated_function
