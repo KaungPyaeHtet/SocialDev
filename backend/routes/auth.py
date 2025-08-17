@@ -25,7 +25,6 @@ def register():
                 ),
                 400,
             )
-
         else:
             username, email, password = itemgetter("username", "email", "password")(
                 user_data
@@ -64,17 +63,47 @@ def login_required(f):
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    # Check if users exist in the database
     # Return JWT with cookies
     # Make users don't have to sign in frequent.
-    ...
+    user_data = request.json
+
+    for field in user_data:
+        user_data[field] = user_data[field].strip()
+        if not user_data[field] or user_data[field] == "":
+            return (
+                jsonify(
+                    {
+                        "error": "Bad Request",
+                        "message": f"The '{field}' field is required and cannot be empty.",
+                    }
+                ),
+                400,
+            )
+        else:
+            username, email, password = itemgetter("username", "email", "password")(
+                user_data
+            )
+
+    try:
+        with sqlite3.connect("users.db") as conn:
+            conn.row_factory = sqlite3.Row
+            db = conn.cursor()
+            user = db.execute(
+                "SELECT username, email FROM users WHERE username = ? AND email = ?"(
+                    username,
+                    email,
+                    password,
+                )
+            ).fetchall
+    except sqlite3.Error:
+        return jsonify({"message": "account does not exist"}), 500
+
+    if not user or check_password_hash(user["password"], password):
+        return jsonify({"message": "fail", "error": "invalid email or password"})
 
 
 @login_required
 def logout(): ...
-
-
-# Don't know
 
 
 # REST API, JWT, sqlite3 schema
