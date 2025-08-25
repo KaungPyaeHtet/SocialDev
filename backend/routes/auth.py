@@ -1,3 +1,4 @@
+import jwt
 import sqlite3
 
 from functools import wraps
@@ -6,6 +7,7 @@ from flask import request, jsonify, Blueprint, url_for, g, redirect
 from werkzeug.security import check_password_hash, generate_password_hash
 
 auth_bp = Blueprint("auth", __name__)
+key = "secret"
 
 
 @auth_bp.route("/register", methods=["POST"])
@@ -20,7 +22,7 @@ def register():
                 jsonify(
                     {
                         "error": "Bad Request",
-                        "message": f"The '{field}' field is required and cannot be empty.",
+                        "msg": f"The '{field}' field is required and cannot be empty.",
                     }
                 ),
                 400,
@@ -34,7 +36,6 @@ def register():
         with sqlite3.connect("users.db") as conn:
             db = conn.cursor()
             hashed_password = generate_password_hash(password)
-
             db.execute(
                 "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
                 (
@@ -48,15 +49,19 @@ def register():
     except sqlite3.Error:
         return jsonify("Username already exists."), 422
 
-    return jsonify({"status": "success", "username": username})
+    return jsonify({"status": "success", "username": username}), 200
 
 
-def login_required(f):
+def jwt_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if g.user is None:
-            return redirect(url_for("login", next=request.url))
-        return f(*args, **kwargs)
+        user = request.headers.get("Authorization")
+        if user is None:
+            return jsonify({"msg": "no jwt"}), 401
+
+        access_token = jwt.decode(user, key, algorithms="HS256")
+
+        return f(access_token["username"], *args, **kwargs)
 
     return decorated_function
 
@@ -64,7 +69,6 @@ def login_required(f):
 @auth_bp.route("/login", methods=["POST"])
 def login():
     # Return JWT with cookies
-    # Make users don't have to sign in frequent.
     user_data = request.json
 
     for field in user_data:
@@ -73,8 +77,7 @@ def login():
             return (
                 jsonify(
                     {
-                        "error": "Bad Request",
-                        "message": f"The '{field}' field is required and cannot be empty.",
+                        "msg": f"'{field}' is missing.",
                     }
                 ),
                 400,
@@ -89,21 +92,15 @@ def login():
             conn.row_factory = sqlite3.Row
             db = conn.cursor()
             user = db.execute(
-                "SELECT username, email FROM users WHERE username = ? AND email = ?"(
-                    username,
-                    email,
-                    password,
-                )
-            ).fetchall
+                "SELECT username, email, password FROM users WHERE username = ?",
+                (username,),
+            ).fetchone()
     except sqlite3.Error:
-        return jsonify({"message": "account does not exist"}), 500
+        return jsonify({"msg": "user does not exist"}), 404
 
-    if not user or check_password_hash(user["password"], password):
-        return jsonify({"message": "fail", "error": "invalid email or password"})
+    if not (user) or not check_password_hash(user["password"], password):
+        return jsonify({"msg": "wrong username or password"}), 404
 
-
-@login_required
-def logout(): ...
-
-
-# REST API, JWT, sqlite3 schema
+    # Store this in localStorage in Frontend
+    access_token = jwt.encode({"username": username}, key, algorithm="HS256")
+    return jsonify(access_token=access_token)
