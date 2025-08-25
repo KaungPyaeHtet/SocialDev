@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import NotFound from "./components/NotFound";
-import Register from "./components/Register";
-import Login from "./components/Login";
+import NotFound from "./components/Auth/NotFound";
+import Register from "./components/Auth/Register";
+import Login from "./components/Auth/Login";
 
 export default function App() {
     return (
