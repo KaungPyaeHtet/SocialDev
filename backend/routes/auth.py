@@ -5,6 +5,7 @@ from functools import wraps
 from operator import itemgetter
 from flask import request, jsonify, Blueprint
 from werkzeug.security import check_password_hash, generate_password_hash
+from helpers import query_db
 
 auth_bp = Blueprint("auth", __name__)
 key = "secret"
@@ -33,19 +34,15 @@ def register():
             )
 
     try:
-        with sqlite3.connect("users.db") as conn:
-            db = conn.cursor()
-            hashed_password = generate_password_hash(password)
-            db.execute(
-                "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
-                (
-                    username,
-                    email,
-                    hashed_password,
-                ),
-            )
-            conn.commit()
-
+        hashed_password = generate_password_hash(password)
+        query_db(
+            "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+            (
+                username,
+                email,
+                hashed_password,
+            ),
+        )
     except sqlite3.IntegrityError:
         return jsonify("Username already exists."), 422
 
@@ -88,19 +85,18 @@ def login():
             )
 
     try:
-        with sqlite3.connect("users.db") as conn:
-            conn.row_factory = sqlite3.Row
-            db = conn.cursor()
-            user = db.execute(
-                "SELECT username, email, password FROM users WHERE username = ?",
-                (username,),
-            ).fetchone()
-    except sqlite3.Error:
+        user = query_db(
+            "SELECT username, email, password FROM users WHERE username = ? AND email = ?",
+            (
+                username,
+                email,
+            ),
+        )
+    except sqlite3.IntegrityError:
         return jsonify({"msg": "user does not exist"}), 404
 
     if not (user) or not check_password_hash(user["password"], password):
         return jsonify({"msg": "wrong username or password"}), 404
 
-    # Store this in localStorage in Frontend
     access_token = jwt.encode({"username": username}, key, algorithm="HS256")
     return jsonify(access_token=access_token)
