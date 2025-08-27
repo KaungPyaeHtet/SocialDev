@@ -46,7 +46,7 @@ def register():
             )
             conn.commit()
 
-    except sqlite3.Error:
+    except sqlite3.IntegrityError:
         return jsonify("Username already exists."), 422
 
     return jsonify({"status": "success", "username": username}), 200

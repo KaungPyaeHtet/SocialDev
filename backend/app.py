@@ -1,7 +1,5 @@
-import jwt
-
 from routes.auth import auth_bp, jwt_required
-from flask import Flask, jsonify, request, make_response, session
+from flask import Flask, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -12,13 +10,14 @@ key = "secret"
 
 
 @app.route("/")
+@jwt_required
 def index():
     return jsonify({"name": "Kaung Pyae Htet", "email": "alice@outlook.com"})
 
 
-@app.route("/users/<user>")
+@app.route("/profile")
 @jwt_required
-def show_user_profile(username, user):
+def show_user_profile(username):
     return jsonify(username)
 
 
