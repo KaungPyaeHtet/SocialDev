@@ -3,7 +3,7 @@ import sqlite3
 
 from functools import wraps
 from operator import itemgetter
-from flask import request, jsonify, Blueprint, url_for, g, redirect
+from flask import request, jsonify, Blueprint
 from werkzeug.security import check_password_hash, generate_password_hash
 
 auth_bp = Blueprint("auth", __name__)

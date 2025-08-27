@@ -9,13 +9,13 @@ CORS(app)
 key = "secret"
 
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 @jwt_required
 def index():
     return jsonify({"name": "Kaung Pyae Htet", "email": "alice@outlook.com"})
 
 
-@app.route("/profile")
+@app.route("/profile", methods=["GET"])
 @jwt_required
 def show_user_profile(username):
     return jsonify(username)
