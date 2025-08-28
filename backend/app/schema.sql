@@ -34,7 +34,7 @@ CREATE TABLE
         FOREIGN KEY (sender_id) REFERENCES users (id)
     );
 
--- INSERT INTO
---     users (username, email, password)
--- VALUES
---     ('ozzy', 'kaungpyae@gmail.com', '123@#$*@#DSLFJS');
+INSERT INTO
+    users (username, email, password)
+VALUES
+    ('ozzy', 'kaungpyae@gmail.com', '123@#$*@#DSLFJS');

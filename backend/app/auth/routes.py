@@ -1,17 +1,18 @@
+# backend/app/auth/routes.py
+
 import jwt
 import sqlite3
-
+from . import auth
 from functools import wraps
+from .helpers import query_db
 from operator import itemgetter
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import query_db
 
-auth_bp = Blueprint("auth", __name__)
 key = "secret"
 
 
-@auth_bp.route("/register", methods=["POST"])
+@auth.route("/register", methods=["POST"])
 def register():
     user_data = request.json
 
@@ -22,8 +23,7 @@ def register():
             return (
                 jsonify(
                     {
-                        "error": "Bad Request",
-                        "msg": f"The '{field}' field is required and cannot be empty.",
+                        "msg": f"'{field}' field missing or empty",
                     }
                 ),
                 400,
@@ -44,9 +44,9 @@ def register():
             ),
         )
     except sqlite3.IntegrityError:
-        return jsonify("Username already exists."), 422
+        return jsonify({"msg": "username already exists"}), 422
 
-    return jsonify({"status": "success", "username": username}), 200
+    return jsonify({"username": username}), 200
 
 
 def jwt_required(f):
@@ -54,31 +54,23 @@ def jwt_required(f):
     def decorated_function(*args, **kwargs):
         user = request.headers.get("Authorization")
         if user is None:
-            return jsonify({"msg": "no jwt"}), 401
+            return jsonify({"msg": "no access token"}), 401
 
         access_token = jwt.decode(user, key, algorithms="HS256")
-
         return f(access_token["username"], *args, **kwargs)
 
     return decorated_function
 
 
-@auth_bp.route("/login", methods=["POST"])
+@auth.route("/login", methods=["POST"])
 def login():
-    # Return JWT with cookies
     user_data = request.json
 
     for field in user_data:
         user_data[field] = user_data[field].strip()
         if not user_data[field] or user_data[field] == "":
-            return (
-                jsonify(
-                    {
-                        "msg": f"'{field}' is missing.",
-                    }
-                ),
-                400,
-            )
+            return jsonify({"msg": f"'{field}' is empty."}), 400
+
         else:
             username, email, password = itemgetter("username", "email", "password")(
                 user_data

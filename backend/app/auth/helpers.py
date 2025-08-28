@@ -1,8 +1,12 @@
 import sqlite3
 from flask import g
-from app import app
 
-DATABASE = "users.db"
+DATABASE = "app/users.db"
+
+
+def init_helper(app):
+    """Register database functions with the Flask app."""
+    app.teardown_appcontext(close_db)
 
 
 def get_db():
@@ -13,7 +17,6 @@ def get_db():
     return db
 
 
-@app.teardown_appcontext
 def close_db(exception):
     db = getattr(g, "_database", None)
     if db is not None:
@@ -23,9 +26,10 @@ def close_db(exception):
 def query_db(query, args=(), one=False):
     """Queries the database and returns a list of dicts."""
     db = get_db()
-    with db.cursor() as cur:
-        cur.execute(query, args)
-        rv = cur.fetchall() # rv - return value
+    cur = db.cursor()
+    cur.execute(query, args)
+    rv = cur.fetchall()  # rv - return value
+    cur.close()
 
     if query.lower().strip().startswith(("insert", "update", "delete")):
         db.commit()
