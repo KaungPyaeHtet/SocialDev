@@ -1,17 +1,17 @@
--- CREATE TABLE
---     users (
---         id INTEGER PRIMARY KEY AUTOINCREMENT,
---         username TEXT NOT NULL UNIQUE,
---         email TEXT NOT NULL UNIQUE,
---         password TEXT NOT NULL
---     );
+CREATE TABLE
+    users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        email TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL
+    );
 
 CREATE TABLE
     chats (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         is_public BOOLEAN NOT NULL DEFAULT 1,
-        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        created_at INTEGER NOT NULL DEFAULT (unixepoch ())
     );
 
 CREATE TABLE
@@ -29,7 +29,7 @@ CREATE TABLE
         chat_id INTEGER NOT NULL,
         sender_id INTEGER NOT NULL,
         content TEXT NOT NULL,
-        timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        timestamp INTEGER NOT NULL DEFAULT (unixepoch ()),
         FOREIGN KEY (chat_id) REFERENCES chats (id),
         FOREIGN KEY (sender_id) REFERENCES users (id)
     );
