@@ -1,8 +1,6 @@
-# backend/app/__init__.py
-
 from flask import Flask
 from .extensions import socketio
-from .auth.helpers import init_helper
+from .auths.helpers import init_helper
 
 
 def create_app():
@@ -17,13 +15,13 @@ def create_app():
     init_helper(app)
 
     # Register blueprints
-    from .auth import auth_bp
+    from .auths import auth
 
-    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(auth, url_prefix="/auth")
 
     # Register the new main blueprint
-    from .main import main_bp
+    from .events import event
 
-    app.register_blueprint(main_bp)
+    app.register_blueprint(event)
 
     return app
