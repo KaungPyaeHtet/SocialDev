@@ -1,9 +1,6 @@
-# backend/app/auth/routes.py
-
 import jwt
 import sqlite3
 from . import auth
-from functools import wraps
 from .helpers import query_db
 from operator import itemgetter
 from flask import request, jsonify
@@ -47,19 +44,6 @@ def register():
         return jsonify({"msg": "username already exists"}), 422
 
     return jsonify({"username": username}), 200
-
-
-def jwt_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        user = request.headers.get("Authorization")
-        if user is None:
-            return jsonify({"msg": "no access token"}), 401
-
-        access_token = jwt.decode(user, key, algorithms="HS256")
-        return f(access_token["username"], *args, **kwargs)
-
-    return decorated_function
 
 
 @auth.route("/login", methods=["POST"])

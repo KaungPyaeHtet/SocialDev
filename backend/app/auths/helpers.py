@@ -1,7 +1,24 @@
+import jwt
 import sqlite3
 from flask import g
+from functools import wraps
+from flask import request, jsonify
 
 DATABASE = "app/users.db"
+key = "secret"
+
+
+def jwt_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        user = request.headers.get("Authorization")
+        if user is None:
+            return jsonify({"msg": "no access token"}), 401
+
+        access_token = jwt.decode(user, key, algorithms="HS256")
+        return f(access_token["username"], *args, **kwargs)
+
+    return decorated_function
 
 
 def init_helper(app):
