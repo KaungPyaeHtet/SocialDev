@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 
 const Login = () => {
@@ -16,9 +17,18 @@ const Login = () => {
             setEmail("");
             setUsername("");
             setPassword("");
-            alert("Success");
+            axios
+                .post("http://127.0.0.1:5000/login", {
+                    username: username,
+                    email: email,
+                    password: password,
+                })
+                .then((res) => {
+                    localStorage.setItem("Access Token", res.data.access_token);
+                });
         }
     };
+
 
     return (
         <div className="d-flex justify-content-center align-items-center h-75">
@@ -73,7 +83,7 @@ const Login = () => {
                     <button
                         type="submit"
                         className="btn btn-primary"
-                        onClick={() => loginFunc()}
+                        onClick={(e) => { e.preventDefault(); loginFunc() }}
                     >
                         Submit
                     </button>

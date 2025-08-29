@@ -5,20 +5,13 @@ from flask import session, jsonify
 
 
 @socketio.on("connect")
-@jwt_required
-def handle_connect(username):
-    session["username"] = username
-    print(f"Client connected: {session['username']}")
+def handle_connect():
+    pass
 
 
 @socketio.on("join")
 def on_join(data):
-    username = session.get("username")
-    if username:
-        print(f"User '{username}' has joined.")
-    else:
-        return jsonify({"msg": "unauthorized"}), 401
-
+    emit('handle_response', data['data'])
 
 @socketio.on("new_message")
 def handle_new_message(message):
