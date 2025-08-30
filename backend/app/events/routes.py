@@ -54,15 +54,9 @@ def disconnect():
 
 @socketio.on("join")  # join_room method must be applied here
 def on_join(data):
-    # username = users.get(request.sid)
-    # if not username:
-    #     print(f"Received event from unknown user with sid {request.sid}")
-    #     return
+    username = users.get(request.sid)
+    print(f"{username} has entered the chat")
 
-    emit("handle_response", {
-        "message" : f"Ozzy has entered the room 1"
-        }, broadcast=True)
-    # socketio.emit("handle_response", {f"{username} has entered the room {chat_id}"}, to=chat_id)
 
 @socketio.on("leave")  # leave_room method must be applied here
 def on_leave(data):
@@ -84,52 +78,3 @@ def handle_message(message):
         print("Unauthorized Access")
         return
     emit("chat", {"message": message, "username": username}, broadcast=True)
-
-# @socketio.on("connect")
-# def handle_connect():
-#     token = request.headers.get("Authorization")
-#     if not token:
-#         print("Client disconnected: No token provided.")
-#         disconnect()
-#         return
-
-#     # Remove "Bearer" prefix, if exists
-#     if " " in token:
-#         token = token.split(" ")[1]
-
-#     try:
-#         decoded_token = jwt.decode(token, key, algorithms=["HS256"])
-#         username = decoded_token.get("username")
-#         if not username:
-#             print("Client disconnected: Token is invalid (no username).")
-#             disconnect()
-#             return
-
-#         session["username"] = username
-#         print(f"Client connected: {username}")
-
-#     except jwt.ExpiredSignatureError:
-#         print("Client disconnected: Token has expired.")
-#         disconnect()
-#         return
-
-#     except jwt.InvalidTokenError:
-#         print("Client disconnected: Token is invalid.")
-#         disconnect()
-#         return
-
-
-# @socketio.on("disconnect")
-# def handle_disconnect():
-#     username = session.get("username")
-#     print(f"Client disconnected: {username}")
-
-
-# @socketio.on("join")
-# def on_join(data):
-#     username = session.get("username")
-#     if not username:
-#         return
-
-#     print(f"Received 'join' event from {username} with data: {data}")
-#     emit("handle_response", {"message": f"Hello, {username}!", "data": data["data"]})
