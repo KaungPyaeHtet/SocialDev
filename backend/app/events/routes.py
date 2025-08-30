@@ -1,6 +1,6 @@
 # backend/app/events/routes.py
 import jwt
-from flask import request, session
+from flask import request
 from flask_socketio import emit, disconnect, join_room, leave_room
 from app.extensions import socketio
 from ..auths.helpers import query_db
@@ -17,7 +17,6 @@ def connect():
         disconnect()
         return
 
-    # Remove "Bearer" prefix in the token if it exists
     if " " in access_token:
         access_token = access_token.split(" ")[1]
 
@@ -52,29 +51,90 @@ def disconnect():
         print(f"Anonymous client disconnected: sid {request.sid}")
 
 
-@socketio.on("join")  # join_room method must be applied here
+@socketio.on("join")
 def on_join(data):
     username = users.get(request.sid)
-    print(f"{username} has entered the chat")
+    # The client should send a room identifier, e.g., 'public_chat'
+    room_name = data.get("room")
 
-
-@socketio.on("leave")  # leave_room method must be applied here
-def on_leave(data):
-    username = users.get(request.sid)
-    if not username:
-        print(f"Received event from unknown user with sid {request.sid}")
+    if not username or not room_name:
         return
 
-    chat_id = 1
-    leave_room(chat_id)
-    socketio.send(f"{username} has leave the room {chat_id}")
+    # Join the socket.io room
+    join_room(room_name)
+    print(f"{username} has entered room: {room_name}")
+
+    # Fetch the chat ID from the database based on the room name
+    chat = query_db("SELECT id FROM chats WHERE name = ?", (room_name,), one=True)
+    if chat:
+        chat_id = chat["id"]
+        # Fetch previous messages for that chat
+        messages = query_db(
+            """
+            SELECT m.content, u.username
+            FROM messages m
+            JOIN users u ON m.sender_id = u.id
+            WHERE m.chat_id = ?
+            ORDER BY m.timestamp ASC
+            """,
+            (chat_id,),
+        )
+
+        # Send chat history only to the user who just joined
+        for msg in messages:
+            emit(
+                "chat",
+                {"message": msg["content"], "username": msg["username"]},
+                to=request.sid,
+            )
+
+    # Announce the new user to everyone else in the room
+    emit(
+        "chat",
+        {"message": f"{username} has entered the room.", "username": "System"},
+        to=room_name,
+        # skip_sid is important to prevent the user from getting their own "joined" message twice
+        skip_sid=request.sid,
+    )
+
+
+@socketio.on("leave")
+def on_leave(data):
+    username = users.get(request.sid)
+    room_name = data.get("room")
+    if username and room_name:
+        leave_room(room_name)
+        emit(
+            "chat",
+            {"message": f"{username} has left the room.", "username": "System"},
+            to=room_name,
+        )
+        print(f"{username} has left room: {room_name}")
 
 
 @socketio.on("message")
-def handle_message(message):
-    print(f"New message: {message}")
+def handle_message(data):
     username = users.get(request.sid)
-    if not username:
-        print("Unauthorized Access")
+    room_name = data.get("room")
+    message = data.get("message")
+
+    if not username or not room_name or not message:
         return
-    emit("chat", {"message": message, "username": username}, broadcast=True)
+
+    # Get the sender's user ID
+    user = query_db("SELECT id FROM users WHERE username = ?", (username,), one=True)
+    # Get the chat's ID
+    chat = query_db("SELECT id FROM chats WHERE name = ?", (room_name,), one=True)
+
+    if user and chat:
+        sender_id = user["id"]
+        chat_id = chat["id"]
+
+        # Store the new message in the database
+        query_db(
+            "INSERT INTO messages (chat_id, sender_id, content) VALUES (?, ?, ?)",
+            (chat_id, sender_id, message),
+        )
+
+        # Emit the message to the correct room
+        emit("chat", {"message": message, "username": username}, to=room_name)
