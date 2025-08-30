@@ -54,15 +54,15 @@ def disconnect():
 
 @socketio.on("join")  # join_room method must be applied here
 def on_join(data):
-    username = users.get(request.sid)
-    if not username:
-        print(f"Received event from unknown user with sid {request.sid}")
-        return
+    # username = users.get(request.sid)
+    # if not username:
+    #     print(f"Received event from unknown user with sid {request.sid}")
+    #     return
 
-    chat_id = 1
-    join_room(chat_id)
-    socketio.send(f"{username} has entered the room {chat_id}")
-
+    emit("handle_response", {
+        "message" : f"Ozzy has entered the room 1"
+        }, broadcast=True)
+    # socketio.emit("handle_response", {f"{username} has entered the room {chat_id}"}, to=chat_id)
 
 @socketio.on("leave")  # leave_room method must be applied here
 def on_leave(data):
@@ -80,8 +80,10 @@ def on_leave(data):
 def handle_message(message):
     print(f"New message: {message}")
     username = users.get(request.sid)
+    if not username:
+        print("Unauthorized Access")
+        return
     emit("chat", {"message": message, "username": username}, broadcast=True)
-
 
 # @socketio.on("connect")
 # def handle_connect():

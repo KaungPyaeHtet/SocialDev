@@ -1,11 +1,16 @@
-import { useEffect, useState } from "react";
-import { socket } from "../../socket"
+import React, { useState, useEffect } from "react";;
+import { socket } from "../../socket";
+import { MyForm } from "./MyForm";
+import { ConnectionManager } from "./ConnectionManager";
+import { ConnectionState } from "./ConnectionState";
+import MessageList from "./MessageList";
 
-const PublicRoom = () => {
+export default function PublicRoom() {
     const [isConnected, setIsConnected] = useState(socket.connected);
-    const [joinEvents, setJoinEvents] = useState([]);
+
     useEffect(() => {
         function onConnect() {
+            console.log("CONNENCt")
             setIsConnected(true);
         }
 
@@ -13,26 +18,21 @@ const PublicRoom = () => {
             setIsConnected(false);
         }
 
-        function onJoinEvent(value) {
-            // setJoinEvents((previous) => [...previous, value]);
-            console.log(value);
-        }
-        
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
-        socket.emit("join", { data: "Hello, Server!" });
-        socket.on("handle_response", onJoinEvent);
 
         return () => {
-            socket.off("connect", onConnect);
-            socket.off("disconnect", onDisconnect);
-            socket.off("join", onJoinEvent);
+            socket.off("connect");
+            socket.off("disconnect");
         };
     }, []);
 
-  return (
-    <div>PublicRoom</div>
-  )
+    return (
+        <div className="PublicRoom">
+            <ConnectionState isConnected={isConnected} />
+            <ConnectionManager />
+            <MessageList />
+            <MyForm />
+        </div>
+    );
 }
-
-export default PublicRoom
