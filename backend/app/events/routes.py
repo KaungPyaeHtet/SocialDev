@@ -55,17 +55,17 @@ def disconnect():
 def on_join(data):
     username = users.get(request.sid)
     # The client should send a room identifier, e.g., 'public_chat'
-    room_name = data.get("room")
+    room = data.get("room")
 
-    if not username or not room_name:
+    if not username or not room:
         return
 
     # Join the socket.io room
-    join_room(room_name)
-    print(f"{username} has entered room: {room_name}")
+    join_room(room)
+    print(f"{username} has entered room: {room}")
 
     # Fetch the chat ID from the database based on the room name
-    chat = query_db("SELECT id FROM chats WHERE name = ?", (room_name,), one=True)
+    chat = query_db("SELECT id FROM chats WHERE name = ?", (room,), one=True)
     if chat:
         chat_id = chat["id"]
         # Fetch previous messages for that chat
@@ -92,7 +92,7 @@ def on_join(data):
     emit(
         "chat",
         {"message": f"{username} has entered the room.", "username": "System"},
-        to=room_name,
+        to=room,
         # skip_sid is important to prevent the user from getting their own "joined" message twice
         skip_sid=request.sid,
     )
@@ -101,30 +101,30 @@ def on_join(data):
 @socketio.on("leave")
 def on_leave(data):
     username = users.get(request.sid)
-    room_name = data.get("room")
-    if username and room_name:
-        leave_room(room_name)
+    room = data.get("room")
+    if username and room:
+        leave_room(room)
         emit(
             "chat",
             {"message": f"{username} has left the room.", "username": "System"},
-            to=room_name,
+            to=room,
         )
-        print(f"{username} has left room: {room_name}")
+        print(f"{username} has left room: {room}")
 
 
 @socketio.on("message")
 def handle_message(data):
     username = users.get(request.sid)
-    room_name = data.get("room")
+    room = data.get("room")
     message = data.get("message")
 
-    if not username or not room_name or not message:
+    if not username or not room or not message:
         return
 
     # Get the sender's user ID
     user = query_db("SELECT id FROM users WHERE username = ?", (username,), one=True)
     # Get the chat's ID
-    chat = query_db("SELECT id FROM chats WHERE name = ?", (room_name,), one=True)
+    chat = query_db("SELECT id FROM chats WHERE name = ?", (room,), one=True)
 
     if user and chat:
         sender_id = user["id"]
@@ -137,4 +137,4 @@ def handle_message(data):
         )
 
         # Emit the message to the correct room
-        emit("chat", {"message": message, "username": username}, to=room_name)
+        emit("chat", {"message": message, "username": username}, to=room)
