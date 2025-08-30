@@ -91,7 +91,7 @@ def on_join(data):
     # Announce the new user to everyone else in the room
     emit(
         "chat",
-        {"message": f"{username} has entered the room.", "username": "System"},
+        {"message": f"{username} has entered the room.", "username": username},
         to=room,
         # skip_sid is important to prevent the user from getting their own "joined" message twice
         skip_sid=request.sid,
