@@ -106,7 +106,7 @@ def on_leave(data):
         leave_room(room)
         emit(
             "chat",
-            {"message": f"{username} has left the room.", "username": "System"},
+            {"message": f"{username} has left the room.", "username": username},
             to=room,
         )
         print(f"{username} has left room: {room}")
