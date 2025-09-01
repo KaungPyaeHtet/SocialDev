@@ -19,7 +19,6 @@ export function MyForm({ messages, setMessages }) {
         event.preventDefault();
         if (!value.trim()) return;
 
-        setMessages((prev) => [...prev, { username: user, text: value }]);
         setValue("");
 
         socket.emit("message", { "user" : user, "message": value} , (response) => {
