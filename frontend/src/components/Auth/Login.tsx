@@ -1,28 +1,31 @@
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [username, setUsername] = useState<string>("");
+    const navigate = useNavigate();
 
 
-    const loginFunc = async () => {
+    const loginFunc = () => {
         if (!email.trim() || !password.trim()) {
             alert("Email/username and password are required");
             return;
         }
 
         try {
-            const res = await axios.post("http://127.0.0.1:5000/auth/login", {
-                "username" : username,
-                "email" : email,
-                "password" : password,
-            });
+            axios.post("http://127.0.0.1:5000/auth/login", {
+                "username": username,
+                "email": email,
+                "password": password,
+            })
+                .then((res) => localStorage.setItem("Access Token", res.data.access_token))
+                .catch((err) => alert(err));
+            
+            navigate("/chat/public");
 
-            localStorage.setItem("Access Token", res.data.access_token);
-
-            window.location.href = "/";
         } catch (err) {
             if (err.response) {
                 alert(err.response.data.msg || "Invalid login credentials");

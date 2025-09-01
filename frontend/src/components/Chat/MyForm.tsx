@@ -1,18 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { socket } from "../../socket";
+import { jwtDecode } from "jwt-decode";
 
 
 export function MyForm({ messages, setMessages }) {
     const [value, setValue] = useState("");
+    const [user, setUser] = useState("");
+    useEffect(() => { 
+        const token = localStorage.getItem("Access Token");
+        if (token) {
+            const decoded: { username: string; [key: string]: any } =
+                jwtDecode(token);
+            setUser(decoded.username);
+        }
+    }, [])
 
     function onSubmit(event) {
         event.preventDefault();
         if (!value.trim()) return;
 
-        setMessages((prev) => [...prev, { username: "You", text: value }]);
+        setMessages((prev) => [...prev, { username: user, text: value }]);
         setValue("");
 
-        socket.emit("message", value, (response) => {
+        socket.emit("message", {
+            
+        }, (response) => {
             console.log("server response:", response);
         });
     }
@@ -31,7 +43,7 @@ export function MyForm({ messages, setMessages }) {
                     className="btn btn-primary"
                     type="submit"
                 >
-                    {"Send"}
+                    Send
                 </button>
             </div>
         </form>

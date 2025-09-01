@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [username, setUsername] = useState<string>("");
@@ -23,7 +25,8 @@ const Register = () => {
                     email: email,
                     password: password,
                 })
-                .catch((err) => console.log(err));
+                .then((value) => { alert(`Successfully added ${username}`) }).catch((err) => alert(err));
+            navigate("/auth/sign-in");
         }
     };
     return (

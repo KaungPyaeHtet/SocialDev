@@ -69,6 +69,7 @@ def login():
                 username,
                 email,
             ),
+            one=True
         )
     except sqlite3.IntegrityError:
         return jsonify({"msg": "user does not exist"}), 404
