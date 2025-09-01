@@ -22,9 +22,7 @@ export function MyForm({ messages, setMessages }) {
         setMessages((prev) => [...prev, { username: user, text: value }]);
         setValue("");
 
-        socket.emit("message", {
-            
-        }, (response) => {
+        socket.emit("message", { "user" : user, "message": value} , (response) => {
             console.log("server response:", response);
         });
     }

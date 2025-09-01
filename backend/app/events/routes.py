@@ -114,28 +114,31 @@ def on_leave(data):
 
 @socketio.on("message")
 def handle_message(data):
-    username = users.get(request.sid)
-    room = data.get("room")
-    message = data.get("message")
+    # username = users.get(request.sid)
+    # room = data.get("room")
+    # message = data.get("message")
 
-    if not username or not room or not message:
-        return
+    # if not username or not room or not message:
+    #     return
 
 
-    # Get the sender's user ID
-    user = query_db("SELECT id FROM users WHERE username = ?", (username,), one=True)
-    # Get the chat's ID
-    chat = query_db("SELECT id FROM chats WHERE name = ?", (room,), one=True)
+    # # Get the sender's user ID
+    # user = query_db("SELECT id FROM users WHERE username = ?", (username,), one=True)
+    # # Get the chat's ID
+    # chat = query_db("SELECT id FROM chats WHERE name = ?", (room,), one=True)
 
-    if user and chat:
-        sender_id = user["id"]
-        chat_id = chat["id"]
+    # if user and chat:
+    #     sender_id = user["id"]
+    #     chat_id = chat["id"]
 
-        # Store the new message in the database
-        query_db(
-            "INSERT INTO messages (chat_id, sender_id, content) VALUES (?, ?, ?)",
-            (chat_id, sender_id, message),
-        )
+    #     # Store the new message in the database
+    #     query_db(
+    #         "INSERT INTO messages (chat_id, sender_id, content) VALUES (?, ?, ?)",
+    #         (chat_id, sender_id, message),
+    #     )
 
-        # Emit the message to the correct room
-        emit("chat", {"message": message, "username": username}, to=room)
+    #     # Emit the message to the correct room
+    #     emit("chat", {"message": message, "username": username}, to=room)
+    message = data.get('message')
+    username = data.get('username')
+    emit('chat', {"message": message, "username": username}, broadcast=True)
