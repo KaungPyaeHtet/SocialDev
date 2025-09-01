@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";;
 import { socket } from "../../socket";
 import { MyForm } from "./MyForm";
-import { ConnectionManager } from "./ConnectionManager";
-import { ConnectionState } from "./ConnectionState";
 import MessageList from "./MessageList";
 
 export default function PublicRoom() {
     const [isConnected, setIsConnected] = useState(socket.connected);
+    const [messages, setMessages] = useState([]);
 
     useEffect(() => {
         function onConnect() {
-            console.log("CONNENCt")
             setIsConnected(true);
         }
 
@@ -29,10 +27,8 @@ export default function PublicRoom() {
 
     return (
         <div className="PublicRoom">
-            <ConnectionState isConnected={isConnected} />
-            <ConnectionManager />
-            <MessageList />
-            <MyForm />
+            <MessageList messages={messages} setMessages={setMessages}/>
+            <MyForm messages={messages} setMessages={setMessages}/>
         </div>
     );
 }

@@ -8,7 +8,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 key = "secret"
 
-
 @auth.route("/register", methods=["POST"])
 def register():
     user_data = request.json
@@ -43,8 +42,9 @@ def register():
             ),
         )
     except sqlite3.IntegrityError:
+        print("error")
         return jsonify({"msg": "username already exists"}), 422
-
+    print('pass')
     return jsonify({"username": username}), 200
 
 
