@@ -3,6 +3,7 @@ import sqlite3
 from flask import g
 from functools import wraps
 from flask import request, jsonify
+from email_validator import validate_email, EmailNotValidError
 
 DATABASE = "app/users.db"
 key = "secret"
@@ -24,6 +25,18 @@ def jwt_required(f):
 def init_helper(app):
     """Register database functions with the Flask app."""
     app.teardown_appcontext(close_db)
+
+
+def check_email(email):
+    try:
+        # validate and get info
+        v = validate_email(email)
+        # replace with normalized form
+        email = v["email"]
+        print("Valid Email")
+    except EmailNotValidError as e:
+        # email is not valid, exception message is human-readable
+        print(str(e))
 
 
 def get_db():
