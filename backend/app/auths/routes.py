@@ -29,7 +29,8 @@ def register():
             username, email, password = itemgetter("username", "email", "password")(
                 user_data
             )
-            check_email(email)
+            if not check_email(email):
+                return jsonify({"msg": "invalid email format"}), 422
 
     try:
         hashed_password = generate_password_hash(password)

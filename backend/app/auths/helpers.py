@@ -27,16 +27,16 @@ def init_helper(app):
     app.teardown_appcontext(close_db)
 
 
-def check_email(email):
+def check_email(email) -> bool:
     try:
         # validate and get info
         v = validate_email(email)
         # replace with normalized form
         email = v["email"]
-        print("Valid Email")
+        return True
     except EmailNotValidError as e:
         # email is not valid, exception message is human-readable
-        print(str(e))
+        return False
 
 
 def get_db():
