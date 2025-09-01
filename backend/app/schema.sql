@@ -9,9 +9,11 @@ CREATE TABLE
 CREATE TABLE
     chats (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
+        owner_id INTEGER NOT NULL,
+        chat_name TEXT NOT NULL,
         is_public BOOLEAN NOT NULL DEFAULT 1,
-        created_at INTEGER NOT NULL DEFAULT (unixepoch ())
+        created_at INTEGER NOT NULL DEFAULT (unixepoch ()),
+        FOREIGN KEY (owner_id) REFERENCES users (id)
     );
 
 CREATE TABLE
@@ -33,8 +35,3 @@ CREATE TABLE
         FOREIGN KEY (chat_id) REFERENCES chats (id),
         FOREIGN KEY (sender_id) REFERENCES users (id)
     );
-
-INSERT INTO
-    users (username, email, password)
-VALUES
-    ('ozzy', 'kaungpyae@gmail.com', '123@#$*@#DSLFJS');

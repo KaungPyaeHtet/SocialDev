@@ -121,6 +121,7 @@ def handle_message(data):
     if not username or not room or not message:
         return
 
+
     # Get the sender's user ID
     user = query_db("SELECT id FROM users WHERE username = ?", (username,), one=True)
     # Get the chat's ID
