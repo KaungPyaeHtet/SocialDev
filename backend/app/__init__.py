@@ -18,6 +18,7 @@ def create_app():
     # Register blueprints
     from .auths import auth
 
+    # Add url prefex such as /auth/register
     app.register_blueprint(auth, url_prefix="/auth")
 
     # Register the new main blueprint
