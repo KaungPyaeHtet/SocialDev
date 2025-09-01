@@ -6,29 +6,35 @@ const Login = () => {
     const [password, setPassword] = useState<string>("");
     const [username, setUsername] = useState<string>("");
 
-    const loginFunc = () => {
-        if (
-            email.trim() == "" ||
-            password.trim() == "" ||
-            username.trim() == ""
-        ) {
-            alert("At least one of the fields are empty");
-        } else {
+
+    const loginFunc = async () => {
+        if (!email.trim() || !password.trim()) {
+            alert("Email/username and password are required");
+            return;
+        }
+
+        try {
+            const res = await axios.post("http://127.0.0.1:5000/auth/login", {
+                "username" : username,
+                "email" : email,
+                "password" : password,
+            });
+
+            localStorage.setItem("Access Token", res.data.access_token);
+
+            window.location.href = "/";
+        } catch (err) {
+            if (err.response) {
+                alert(err.response.data.msg || "Invalid login credentials");
+            } else {
+                alert("Server unreachable");
+            }
+        } finally {
             setEmail("");
             setUsername("");
             setPassword("");
-            axios
-                .post("http://127.0.0.1:5000/login", {
-                    username: username,
-                    email: email,
-                    password: password,
-                })
-                .then((res) => {
-                    localStorage.setItem("Access Token", res.data.access_token);
-                });
         }
     };
-
 
     return (
         <div className="d-flex justify-content-center align-items-center h-75">

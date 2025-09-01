@@ -1,10 +1,12 @@
 from flask import Flask
 from .extensions import socketio
 from .auths.helpers import init_helper
+from flask_cors import CORS
 
 def create_app():
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__)
+    CORS(app)
     app.config["SECRET_KEY"] = "secret!"
 
     # Initialize extensions

@@ -4,7 +4,6 @@ import { socket } from "../../socket";
 
 export function MyForm({ messages, setMessages }) {
     const [value, setValue] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
 
     function onSubmit(event) {
         event.preventDefault();
@@ -12,11 +11,9 @@ export function MyForm({ messages, setMessages }) {
 
         setMessages((prev) => [...prev, { username: "You", text: value }]);
         setValue("");
-        setIsLoading(true);
 
         socket.emit("message", value, (response) => {
             console.log("server response:", response);
-            setIsLoading(false);
         });
     }
 
@@ -29,14 +26,12 @@ export function MyForm({ messages, setMessages }) {
                     placeholder="Type your message..."
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
-                    disabled={isLoading}
                 />
                 <button
                     className="btn btn-primary"
                     type="submit"
-                    disabled={isLoading || !value.trim()}
                 >
-                    {isLoading ? "Sending..." : "Send"}
+                    {"Send"}
                 </button>
             </div>
         </form>

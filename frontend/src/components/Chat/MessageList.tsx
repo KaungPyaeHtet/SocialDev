@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { socket } from '../../socket';
 
 const MessageList = ({messages, setMessages}) => {
 
     useEffect(() => {
         function onChatEvent(data) {
-            console.log(data.username)
             setMessages(prev => [...prev, { username: data.username, text: data.message }])
         }
         socket.on("chat", onChatEvent);
@@ -32,9 +31,6 @@ const MessageList = ({messages, setMessages}) => {
                                           {msg.username}
                                       </strong>
                                       : {msg.text}
-                                  </span>
-                                  <span className="badge bg-secondary">
-                                      #{id + 1}
                                   </span>
                               </li>
                           ))
