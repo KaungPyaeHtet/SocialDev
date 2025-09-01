@@ -1,7 +1,7 @@
 import jwt
 import sqlite3
 from . import auth
-from .helpers import query_db
+from .helpers import query_db, check_email
 from operator import itemgetter
 from flask import request, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -29,6 +29,7 @@ def register():
             username, email, password = itemgetter("username", "email", "password")(
                 user_data
             )
+            check_email(email)
 
     try:
         hashed_password = generate_password_hash(password)
