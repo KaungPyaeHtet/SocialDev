@@ -6,6 +6,8 @@ import { jwtDecode } from "jwt-decode";
 export function MyForm({ messages, setMessages }) {
     const [value, setValue] = useState("");
     const [username, setUsername] = useState("");
+
+    const [room, setRoom] = useState("");
     useEffect(() => { 
         const token = localStorage.getItem("Access Token");
         if (token) {
@@ -36,10 +38,17 @@ export function MyForm({ messages, setMessages }) {
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                 />
-                <button
-                    className="btn btn-primary"
-                    type="submit"
-                >
+                <button className="btn btn-primary" type="submit">
+                    Send
+                </button>
+                <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Type Your Room"
+                    value={room}
+                    onChange={(e) => setRoom(e.target.value)}
+                />
+                <button className="btn btn-primary" type="submit">
                     Send
                 </button>
             </div>
