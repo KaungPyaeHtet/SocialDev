@@ -61,7 +61,7 @@ def query_db(query, args=(), one=False):
     rv = cur.fetchall()  # rv - return value
     cur.close()
 
-    if query.lower().strip().startswith(("insert", "update", "delete")):
+    if query.lower().strip().startswith(("INSERT", "UPDATE", "DELETE")):
         db.commit()
 
     return (rv[0] if rv else None) if one else rv
