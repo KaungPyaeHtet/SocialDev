@@ -116,7 +116,7 @@ def handle_message(data):
     # Get the sender's user ID
     user = query_db("SELECT id FROM users WHERE username = ?", (username,), one=True)
     # Get the chat's ID
-    chat = query_db("SELECT id FROM chats WHERE name = ?", (room,), one=True)
+    chat = query_db("SELECT id FROM chats WHERE chat_name = ?", (room,), one=True)
 
     if user and chat:
         sender_id = user["id"]
@@ -172,4 +172,3 @@ def handle_private_chat(data):
     # Only notify the user who initiated the chat.
     # The other user will see it on their next refresh via the GET /chats endpoint.
     emit("private_chat_initiated", {"room": room_name, "with_user": other_username})
-    
