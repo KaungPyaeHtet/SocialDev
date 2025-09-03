@@ -59,8 +59,7 @@ def on_join(data):
     join_room(room)
     print(f"{username} has entered room: {room}")
 
-    # Fetch the chat ID from the database based on the room name
-    chat = query_db("SELECT id FROM chats WHERE name = ?", (room,), one=True)
+    chat = query_db("SELECT id FROM chats WHERE chat_name = ?", (room,), one=True)
     if chat:
         chat_id = chat["id"]
         # Fetch previous messages for that chat
