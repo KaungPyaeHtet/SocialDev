@@ -4,6 +4,7 @@ import Register from "./components/Auth/Register";
 import Login from "./components/Auth/Login";
 import PublicRoom from "./components/Chat/PublicRoom";
 import { jwtDecode } from "jwt-decode";
+import Navbar from "./components/Navbar";
 
 type ProtectedRouteProps = {
     jwt: string | null;
@@ -23,11 +24,13 @@ const ProtectedRoute = ({ jwt, children }: ProtectedRouteProps) => {
     }
 
 }
+
 export default function App() {
     
     const jwt = localStorage.getItem("Access Token") || null;
     return (
         <BrowserRouter>
+            <Navbar />
             <Routes>
                 <Route path="/" element={<Navigate to="/chat/public" replace />} />
                 <Route path="auth">
