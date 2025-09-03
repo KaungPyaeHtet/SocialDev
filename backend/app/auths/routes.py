@@ -20,7 +20,7 @@ def register():
             return (
                 jsonify(
                     {
-                        "msg": f"'{field}' field missing or empty",
+                        "msg": f"{field} field missing or empty",
                     }
                 ),
                 400,
@@ -29,8 +29,9 @@ def register():
             username, email, password = itemgetter("username", "email", "password")(
                 user_data
             )
-            if not check_email(email):
-                return jsonify({"msg": "invalid email format"}), 422
+
+    if not check_email(email):
+        return jsonify({"msg": "invalid email format"}), 422
 
     try:
         hashed_password = generate_password_hash(password)
@@ -54,7 +55,7 @@ def login():
     for field in user_data:
         user_data[field] = user_data[field].strip()
         if not user_data[field] or user_data[field] == "":
-            return jsonify({"msg": f"'{field}' is empty."}), 400
+            return jsonify({"msg": f"{field} is empty."}), 400
 
         else:
             username, email, password = itemgetter("username", "email", "password")(
@@ -70,7 +71,7 @@ def login():
             ),
             one=True,
         )
-    except sqlite3.IntegrityError:
+    except sqlite3.in:
         return jsonify({"msg": "user does not exist"}), 404
 
     if not (user) or not check_password_hash(user["password"], password):

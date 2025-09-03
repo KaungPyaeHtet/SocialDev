@@ -24,7 +24,7 @@ def connect():
         username = decoded_token.get("username")
 
         if not username:
-            print("Client disconnected: invalid token (no username)")
+            print("Client disconnected: Token is invalid. (no username)")
             disconnect()
             return
 
@@ -94,6 +94,7 @@ def on_join(data):
 def on_leave(data):
     username = session.get("username")
     room = data.get("room")
+
     if username and room:
         leave_room(room)
         emit(
@@ -144,7 +145,6 @@ def handle_private_chat(data):
         "SELECT id FROM users WHERE username = ?", (other_username,), one=True
     )
     if not other_user:
-        # Optionally emit an error back to the initiator
         emit("error", {"message": "User not found."})
         return
 
@@ -153,7 +153,6 @@ def handle_private_chat(data):
 
     if not chat:
         # Create the private chat and add participants
-        # This part of the logic remains the same
         query_db(
             "INSERT INTO chats (chat_name, is_public) VALUES (?, ?)", (room_name, 0)
         )
