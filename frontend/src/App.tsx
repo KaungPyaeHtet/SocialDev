@@ -15,12 +15,10 @@ const ProtectedRoute = ({ jwt, children }: ProtectedRouteProps) => {
         return <div>Unauthorized Access</div>
     }
     try {
-        console.log(jwt)
         jwtDecode(jwt);
         return children;
     }
     catch (error) {
-        console.log(error);
         return <div>Unauthorized Access</div>
     }
 
