@@ -173,3 +173,4 @@ def handle_private_chat(data):
     # Only notify the user who initiated the chat.
     # The other user will see it on their next refresh via the GET /chats endpoint.
     emit("private_chat_initiated", {"room": room_name, "with_user": other_username})
+    
