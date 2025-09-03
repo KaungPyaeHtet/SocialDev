@@ -7,13 +7,14 @@ CREATE TABLE
     );
 
 CREATE TABLE
+    sqlite_sequence (name, seq);
+
+CREATE TABLE
     chats (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        owner_id INTEGER NOT NULL,
         chat_name TEXT NOT NULL,
         is_public BOOLEAN NOT NULL DEFAULT 1,
-        created_at INTEGER NOT NULL DEFAULT (unixepoch ()),
-        FOREIGN KEY (owner_id) REFERENCES users (id)
+        created_at INTEGER NOT NULL DEFAULT (unixepoch ())
     );
 
 CREATE TABLE
