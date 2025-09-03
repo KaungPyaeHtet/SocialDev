@@ -59,4 +59,8 @@ def handle_message(data):
 
     # You need to store chat history
 
-    emit('chat', {"message": data['message'], "username" : data['username']}, broadcast=True)
+    emit(
+        "chat",
+        {"message": data["message"], "username": data["username"]},
+        broadcast=True,
+    )

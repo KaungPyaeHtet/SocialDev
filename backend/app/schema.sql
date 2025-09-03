@@ -7,6 +7,15 @@ CREATE TABLE
     );
 
 CREATE TABLE
+    messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sender_id INTEGER NOT NULL,
+        content TEXT NOT NULL,
+        timestamp INTEGER NOT NULL DEFAULT (unixepoch ()),
+        FOREIGN KEY (sender_id) REFERENCES users (id)
+    );
+
+CREATE TABLE
     sqlite_sequence (name, seq);
 
 -- CREATE TABLE
@@ -16,7 +25,6 @@ CREATE TABLE
 --         is_public BOOLEAN NOT NULL DEFAULT 1,
 --         created_at INTEGER NOT NULL DEFAULT (unixepoch ())
 --     );
-
 -- CREATE TABLE
 --     participants (
 --         user_id INTEGER NOT NULL,
@@ -25,7 +33,6 @@ CREATE TABLE
 --         FOREIGN KEY (user_id) REFERENCES users (id),
 --         FOREIGN KEY (chat_id) REFERENCES chats (id)
 --     );
-
 -- CREATE TABLE
 --     messages (
 --         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,14 +43,3 @@ CREATE TABLE
 --         FOREIGN KEY (chat_id) REFERENCES chats (id),
 --         FOREIGN KEY (sender_id) REFERENCES users (id)
 --     );
-
-
-
-CREATE TABLE
-    messages (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        sender_id INTEGER NOT NULL,
-        content TEXT NOT NULL,
-        timestamp INTEGER NOT NULL DEFAULT (unixepoch ()),
-        FOREIGN KEY (sender_id) REFERENCES users (id)
-    )
