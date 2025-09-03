@@ -71,7 +71,7 @@ def login():
             ),
             one=True,
         )
-    except sqlite3.in:
+    except sqlite3.IntegrityError:
         return jsonify({"msg": "user does not exist"}), 404
 
     if not (user) or not check_password_hash(user["password"], password):
