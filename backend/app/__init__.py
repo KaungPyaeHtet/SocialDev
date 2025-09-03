@@ -16,15 +16,14 @@ def create_app():
     # Initialize helper functions
     init_helper(app)
 
-    # Register blueprints
-    from .auths import auth
-
     # Add url prefex such as /auth/register
+    from .auths import auth
     app.register_blueprint(auth, url_prefix="/auth")
 
-    # Register the new main blueprint
-    from .events import event
+    from .chats import chat_bp
+    app.register_blueprint(chat_bp, url_prefix="/")
 
+    from .events import event
     app.register_blueprint(event)
 
     return app
