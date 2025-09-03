@@ -20,9 +20,6 @@ def create_app():
     from .auths import auth
     app.register_blueprint(auth, url_prefix="/auth")
 
-    from .chats import chat_bp
-    app.register_blueprint(chat_bp, url_prefix="/")
-
     from .events import event
     app.register_blueprint(event)
 

@@ -5,13 +5,13 @@ import { jwtDecode } from "jwt-decode";
 
 export function MyForm({ messages, setMessages }) {
     const [value, setValue] = useState("");
-    const [user, setUser] = useState("");
+    const [username, setUsername] = useState("");
     useEffect(() => { 
         const token = localStorage.getItem("Access Token");
         if (token) {
             const decoded: { username: string; [key: string]: any } =
                 jwtDecode(token);
-            setUser(decoded.username);
+            setUsername(decoded.username);
         }
     }, [])
 
@@ -21,7 +21,7 @@ export function MyForm({ messages, setMessages }) {
 
         setValue("");
 
-        socket.emit("message", { "user" : user, "message": value} , (response) => {
+        socket.emit("message", { "username" : username, "message": value} , (response) => {
             console.log("server response:", response);
         });
     }

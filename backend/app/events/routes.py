@@ -49,12 +49,14 @@ def disconnect():
 
 
 @socketio.on("join")
-def on_join(data): ...
-
-
-@socketio.on("leave")
-def on_leave(data): ...
+def on_join(data):
+    pass
+    # You need to send the chat history
 
 
 @socketio.on("message")
-def handle_message(data): ...
+def handle_message(data):
+
+    # You need to store chat history
+
+    emit('chat', {"message": data['message'], "username" : data['username']}, broadcast=True)

@@ -13,6 +13,7 @@ const MessageList = ({messages, setMessages}) => {
             socket.off("chat", onChatEvent);
         };
     }, [messages]);
+    
   return (
       <div className="d-flex justify-content-center" style={{height: "80vh"}}>
           <div className="w-50 vh-50">
