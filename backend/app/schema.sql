@@ -9,14 +9,10 @@ CREATE TABLE
 CREATE TABLE
     messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        sender_id INTEGER NOT NULL,
+        sender_name TEXT NOT NULL,
         content TEXT NOT NULL,
-        timestamp INTEGER NOT NULL DEFAULT (unixepoch ()),
-        FOREIGN KEY (sender_id) REFERENCES users (id)
+        timestamp INTEGER NOT NULL DEFAULT (unixepoch ())
     );
-
-CREATE TABLE
-    sqlite_sequence (name, seq);
 
 -- CREATE TABLE
 --     chats (

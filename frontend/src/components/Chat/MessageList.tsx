@@ -4,15 +4,27 @@ import { socket } from '../../socket';
 const MessageList = ({messages, setMessages}) => {
 
     useEffect(() => {
+        socket.emit("join")
+
+        function onChatHistory(data) {
+            console.log(data)
+            setMessages(
+                data.map(item => ({
+                    username: item.username,
+                    text: item.message
+                }))
+            )
+        }
         function onChatEvent(data) {
-            console.log("data", data)
             setMessages(prev => [...prev, { username: data.username, text: data.message }])
         }
+        socket.on('chat_history', onChatHistory)
         socket.on("chat", onChatEvent);
         return () => {
             socket.off("chat", onChatEvent);
+            socket.off("chat_history", onChatHistory);
         };
-    }, [messages]);
+    }, []);
     
   return (
       <div className="d-flex justify-content-center" style={{height: "80vh"}}>

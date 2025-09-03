@@ -49,15 +49,20 @@ def disconnect():
 
 
 @socketio.on("join")
-def on_join(data):
-    pass
-    # You need to send the chat history
+def on_join():
+    messages = query_db("""SELECT * FROM messages ORDER BY timestamp ASC""")
+    history = [
+        {"username": m["sender_name"], "message": m["content"]}
+        for m in messages
+    ]
+    emit("chat_history", history, to=request.sid)
 
 
 @socketio.on("message")
 def handle_message(data):
 
     # You need to store chat history
+    query_db("""INSERT INTO messages (sender_name, content) VALUES (?, ?)""", (data['username'], data['message']))
 
     emit(
         "chat",
