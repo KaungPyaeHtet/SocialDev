@@ -19,6 +19,11 @@ def connect():
     if " " in access_token:  # if the header contains "Bearer", only take token part
         access_token = access_token.split(" ")[1]
 
+    if access_token == "null":
+        print("Client disconnected: Invalid token format.")
+        disconnect()
+        return
+
     try:
         decoded_token = jwt.decode(access_token, key, algorithms="HS256")
         username = decoded_token.get("username")
@@ -52,17 +57,17 @@ def disconnect():
 def on_join():
     messages = query_db("""SELECT * FROM messages ORDER BY timestamp ASC""")
     history = [
-        {"username": m["sender_name"], "message": m["content"]}
-        for m in messages
+        {"username": m["sender_name"], "message": m["content"]} for m in messages
     ]
     emit("chat_history", history, to=request.sid)
 
 
 @socketio.on("message")
 def handle_message(data):
-
-    # You need to store chat history
-    query_db("""INSERT INTO messages (sender_name, content) VALUES (?, ?)""", (data['username'], data['message']))
+    query_db(
+        """INSERT INTO messages (sender_name, content) VALUES (?, ?)""",
+        (data["username"], data["message"]),
+    )
 
     emit(
         "chat",
