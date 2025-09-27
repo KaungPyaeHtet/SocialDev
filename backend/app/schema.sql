@@ -10,6 +10,6 @@ CREATE TABLE
     messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         sender_name TEXT NOT NULL,
-        content TEXT NOT NULL,
+        content TEXT NOT NULL,g
         timestamp INTEGER NOT NULL DEFAULT (unixepoch ())
     );
