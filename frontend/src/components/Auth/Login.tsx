@@ -2,12 +2,15 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+type LoginProps = {
+    onLogin: (token: string) => void;
+};
+
+const Login = ({ onLogin }: LoginProps) => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [username, setUsername] = useState<string>("");
     const navigate = useNavigate();
-
 
     const loginFunc = () => {
         if (!email.trim() || !password.trim()) {
@@ -15,28 +18,27 @@ const Login = () => {
             return;
         }
 
-        try {
-            axios.post("http://127.0.0.1:5000/auth/login", {
-                "username": username,
-                "email": email,
-                "password": password,
+        axios
+            .post("http://127.0.0.1:5000/auth/login", {
+                username,
+                email,
+                password,
             })
-                .then((res) => localStorage.setItem("Access Token", res.data.access_token))
-                .catch((err) => alert(err));
-            
-            navigate("/chat/public");
+            .then((res) => {
+                const token = res.data.access_token;
+                localStorage.setItem("Access Token", token);
 
-        } catch (err) {
-            if (err.response) {
-                alert(err.response.data.msg || "Invalid login credentials");
-            } else {
-                alert("Server unreachable");
-            }
-        } finally {
-            setEmail("");
-            setUsername("");
-            setPassword("");
-        }
+                onLogin(token);
+                navigate("/chat/public");
+            })
+            .catch((err) =>
+                alert(err.response?.data?.msg || "Invalid login credentials")
+            )
+            .finally(() => {
+                setEmail("");
+                setUsername("");
+                setPassword("");
+            });
     };
 
     return (
@@ -46,10 +48,10 @@ const Login = () => {
                 <div className="mb-3">
                     <label>Username</label>
                     <input
-                        type="Username"
+                        type="text"
                         className="form-control"
                         placeholder="Enter Username"
-                        value={username || ""}
+                        value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
                 </div>
@@ -59,7 +61,7 @@ const Login = () => {
                         type="email"
                         className="form-control"
                         placeholder="Enter email"
-                        value={email || ""}
+                        value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
                 </div>
@@ -69,7 +71,7 @@ const Login = () => {
                         type="password"
                         className="form-control"
                         placeholder="Enter password"
-                        value={password || ""}
+                        value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
@@ -92,7 +94,10 @@ const Login = () => {
                     <button
                         type="submit"
                         className="btn btn-primary"
-                        onClick={(e) => { e.preventDefault(); loginFunc() }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            loginFunc();
+                        }}
                     >
                         Submit
                     </button>

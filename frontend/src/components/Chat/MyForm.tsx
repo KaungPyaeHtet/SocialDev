@@ -41,16 +41,6 @@ export function MyForm({ messages, setMessages }) {
                 <button className="btn btn-primary" type="submit">
                     Send
                 </button>
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Type Your Room"
-                    value={room}
-                    onChange={(e) => setRoom(e.target.value)}
-                />
-                <button className="btn btn-primary" type="submit">
-                    Send
-                </button>
             </div>
         </form>
     );
