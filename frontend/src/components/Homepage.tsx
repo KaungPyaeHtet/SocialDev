@@ -9,14 +9,6 @@ export default function HomePage() {
                     Connect, chat, and share instantly with friends and the
                     community.
                 </p>
-                <div className="home-buttons">
-                    <Link to="/auth/sign-in" className="btn btn-login">
-                        Login
-                    </Link>
-                    <Link to="/auth/sign-up" className="btn btn-register">
-                        Register
-                    </Link>
-                </div>
             </div>
         </div>
     );

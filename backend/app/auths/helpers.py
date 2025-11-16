@@ -29,13 +29,10 @@ def init_helper(app):
 
 def check_email(email) -> bool:
     try:
-        # validate and get info
-        v = validate_email(email)
-        # replace with normalized form
-        email = v["email"]
+        v = validate_email(email) # validate and get info
+        email = v["email"] # replace with normalized form
         return True
     except EmailNotValidError as e:
-        # email is not valid, exception message is human-readable
         return False
 
 
